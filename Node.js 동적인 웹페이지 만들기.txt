@@ -1,0 +1,41 @@
+var http = require('http');
+var fs = require('fs'); //파일 입출력
+var url = require('url'); //우리의 url를 저장하는 변수 url 
+ 
+var app = http.createServer(function(request,response){
+    var _url = request.url; //주소 url값을 저장하는 변수   var _url 
+    var queryData = url.parse(_url, true).query;  //var _url에서 id값을 저장하는 변수  queryData 
+    var title = queryData.id; //id의 값을 저장하는 변수 title 
+    if(_url == '/'){ //맨처음 아이디 값을 주지 않을 경우는 
+      title = 'Welcome'; //Welcome으로 표시
+    }
+    if(_url == '/favicon.ico'){
+      return response.writeHead(404);
+    }
+    response.writeHead(200);
+    fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){ //디렉토리 data의 ${queryData.id}명의 파일을 받아서 utf8로 처리 하고 읽어서 description변수에 저장
+      var template = `
+      <!doctype html>
+      <html>
+      <head>
+        <title>WEB1 - ${title}</title>
+        <meta charset="utf-8">
+      </head>
+      <body>
+        <h1><a href="/">WEB</a></h1>
+        <ul>
+          <li><a href="/?id=HTML">HTML</a></li>
+          <li><a href="/?id=CSS">CSS</a></li>
+          <li><a href="/?id=JavaScript">JavaScript</a></li>
+        </ul>
+        <h2>${title}</h2>
+        <p>${description}</p>
+      </body>
+      </html>
+      `;
+      response.end(template); //실행
+    })
+ 
+ 
+});
+app.listen(3000);
