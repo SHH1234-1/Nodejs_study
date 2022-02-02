@@ -1,0 +1,91 @@
+var testFolder = './data'; //data 디렉토리에 있는 파일들을 testFolder 변수에 저장
+var fs = require('fs');
+ 
+fs.readdir(testFolder, function(error, filelist){//testFolder안에 있는  파일들을 읽어서 filelist의 배열에 저장
+  console.log(filelist);  //출력하면 배열로 출력됨
+})
+-----------------------------------------------------------------------
+
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+ 
+var app = http.createServer(function(request,response){
+    var _url = request.url;
+    var queryData = url.parse(_url, true).query;
+    var pathname = url.parse(_url, true).pathname;
+    if(pathname === '/'){
+      if(queryData.id === undefined){
+ 
+        fs.readdir('./data', function(error, filelist){ //data디렉토리안에 있는 파일들을 filelist라는 이름을 가진 배열로 저장
+          var title = 'Welcome';
+          var description = 'Hello, Node.js';
+          var list = '<ul>';
+          var i = 0;
+          while(i < filelist.length){
+            list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+            i = i + 1;
+          }
+          list = list+'</ul>';
+          var template = `
+          <!doctype html>
+          <html>
+          <head>
+            <title>WEB1 - ${title}</title>
+            <meta charset="utf-8">
+          </head>
+          <body>
+            <h1><a href="/">WEB</a></h1>
+            ${list}
+            <h2>${title}</h2>
+            <p>${description}</p>
+          </body>
+          </html>
+          `;
+          response.writeHead(200);
+          response.end(template);
+        })
+ 
+ 
+ 
+      } else {
+        fs.readdir('./data', function(error, filelist){
+          var title = 'Welcome';
+          var description = 'Hello, Node.js';
+          var list = '<ul>';
+          var i = 0;
+          while(i < filelist.length){
+            list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+            i = i + 1;
+          }
+          list = list+'</ul>';
+          fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
+            var title = queryData.id;
+            var template = `
+            <!doctype html>
+            <html>
+            <head>
+              <title>WEB1 - ${title}</title>
+              <meta charset="utf-8">
+            </head>
+            <body>
+              <h1><a href="/">WEB</a></h1>
+              ${list}
+              <h2>${title}</h2>
+              <p>${description}</p>
+            </body>
+            </html>
+            `;
+            response.writeHead(200);
+            response.end(template);
+          });
+        });
+      }
+    } else {
+      response.writeHead(404);
+      response.end('Not found');
+    }
+ 
+ 
+ 
+}); 
