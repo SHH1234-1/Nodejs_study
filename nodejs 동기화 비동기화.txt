@@ -1,0 +1,18 @@
+var fs = require('fs');
+
+
+/*동기화*/ 
+/*
+//readFileSync
+console.log('A'); //순차적으로 실행
+var result = fs.readFileSync('syntax/sample.txt', 'utf8');
+console.log(result);
+console.log('C');
+*/
+ 
+/*비동기화*/ 
+console.log('A');  //1번으로 실행
+fs.readFile('syntax/sample.txt', 'utf8', function(err, result){ //바로 이 함수구문이 실행되는것이 아니라
+    console.log(result);
+});
+console.log('C'); //먼저실행되고 그 다음에 위에 함수 구문이 실행됨 
